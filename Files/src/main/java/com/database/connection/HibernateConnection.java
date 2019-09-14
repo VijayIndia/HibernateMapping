@@ -1,10 +1,13 @@
 package com.database.connection;
+import com.database.bean.FirstTable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.apache.commons.dbcp2.BasicDataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import org.hibernate.*;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 
 public class HibernateConnection {
 
@@ -30,9 +33,22 @@ public class HibernateConnection {
         }
     }
 
+    private void testHibernateConnection(){
+        System.out.println("Trying to establish Hibernate Connection");
+        ApplicationContext context = new ClassPathXmlApplicationContext("context.xml");
+        HibernateTemplate hibernateTemplate= (HibernateTemplate) context.getBean("template");
+        FirstTable firstTable=new FirstTable();
+        firstTable.setFirstName("Vijay");
+        firstTable.setLastName("Manohar");
+        firstTable.setSalary(1000);
+        hibernateTemplate.save(firstTable);
+        System.out.println("Hibernate Connection has been established succesfully");
+    }
+
     public static void main(String args[]) {
         HibernateConnection conn=new HibernateConnection();
-        conn.testDataSourceConnection();
+       // conn.testDataSourceConnection();
+        conn.testHibernateConnection();
     }
 
     public void setDataSource(BasicDataSource dataSource) {
