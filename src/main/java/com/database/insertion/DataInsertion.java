@@ -1,5 +1,6 @@
 package com.database.insertion;
 import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
+import org.hibernate.SessionFactory;
 public class DataInsertion {
 
     private HibernateTemplate hibernateTemplate;
