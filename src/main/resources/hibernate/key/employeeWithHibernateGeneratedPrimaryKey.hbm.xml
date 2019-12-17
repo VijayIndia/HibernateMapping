@@ -1,0 +1,14 @@
+<?xml version = "1.0" encoding = "utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="com.database.common.model.key.EmployeeWithHibernateGeneratedPrimaryKey" table="EmployeeWithHibernateGeneratedPrimaryKey">
+        <id name="employeeId" column="employee_id" type="java.lang.Integer">
+            <generator class="increment"/>
+        </id>
+        <property name="employeeName" column="employee_name" type="java.lang.String"/>
+        <property name="isActive" column="is_active" type="java.lang.Integer" />
+        <property name="dataAllowance" column="data_allowance" type="java.lang.Long"/>
+    </class>
+</hibernate-mapping>

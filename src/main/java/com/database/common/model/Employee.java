@@ -1,14 +1,14 @@
-package com.database.bean;
+package com.database.common.model;
 
 import java.io.Serializable;
 
-public class FirstTable implements Serializable{
+public class Employee implements Serializable{
     private static final long serialVersionUID = 1L;
 
-    int id;
-    String firstName;
-    String lastName;
-    int salary;
+    private int id;
+    private String firstName;
+    private String lastName;
+    private int salary;
 
     public int getId() {
         return id;

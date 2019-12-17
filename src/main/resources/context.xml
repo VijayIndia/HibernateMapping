@@ -6,39 +6,130 @@
     http://www.springframework.org/schema/context
     http://www.springframework.org/schema/context/spring-context.xsd">
 
+    <context:annotation-config/>
+
+    <!-- Common Db Connection Properties Begin-->
     <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
         <property name="driverClassName" value="net.sourceforge.jtds.jdbc.Driver"/>
         <property name="url" value="jdbc:jtds:sqlserver://localhost:1433;databaseName=sample"/>
         <property name="username" value="sa"/>
         <property name="password" value="root"/>
         <property name="validationQuery" value="select 1" />
-    </bean>
-
+    <!--    <property name="initialSize" value="10"/>Database Pool Initial Size -->
+        <!--    <property name="maxIdle" value="10"/>Database Pool Initial Size -->
+        <!--   <property name="maxActive" value="10"/>Database Pool Max Size -->
+        <!--     <property name="maxWait" value="60000"/>Database Pool Maximum Wait -->
+        <!--     <property name="testOnBorrow" value="true"/> -->
+     </bean>
     <bean id="sessionFactory"  class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
         <property name="dataSource" ref="dataSource" />
         <property name="hibernateProperties">
             <props>
                 <prop key="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</prop> <!-- Hibernate decides which DB to use -->
                 <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.cglib.use_reflection_optimizer" >false</prop>
+                <!--Disable Second Level Caching -->
+                <prop key="hibernate.cache.provider_class">org.hibernate.cache.NoCacheProvider</prop>
+                <!-- Set a maximum "depth" of outer join (one-to-one,many-to-one association),hibernate recommendeds 0-3,0 disables outer join -->
+                <prop key="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</prop>
             </props>
         </property>
         <property name="mappingResources">
             <list>
-                <value>firstTable.hbm.xml</value>
+                <value>hibernate/employee.hbm.xml</value>
+                <value>hibernate/key/employeeWithSqlGeneratedPrimaryKey.hbm.xml</value>
+                <value>hibernate/key/employeeWithHibernateGeneratedPrimaryKey.hbm.xml</value>
+                <value>hibernate/key/employeeWithSqlGeneratedGuid.hbm.xml</value>
+                <value>hibernate/key/employeeWithHibernateGuid.hbm.xml</value>
+                <value>hibernate/key/employeeWithCompositeKey.hbm.xml</value>
+                <value>hibernate/key/employeeSalaryWithForeignKey.hbm.xml</value>
+                <value>hibernate/key/employeeSalaryWithTwoForeignKey.hbm.xml</value>
+                <value>hibernate/date/employeeWithDateTime.hbm.xml</value>
             </list>
         </property>
     </bean>
+    <bean id="annotatedSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+    <property name="dataSource" ref="dataSource"/>
+    <property name="hibernateProperties">
+        <props>
+            <prop key="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</prop> <!-- Hibernate decides which DB to use -->
+            <prop key="hibernate.show_sql">true</prop>
+            <prop key="hibernate.cglib.use_reflection_optimizer" >false</prop>
+            <!--Disable Second Level Caching -->
+            <prop key="hibernate.cache.provider_class">org.hibernate.cache.NoCacheProvider</prop>
+            <!-- Set a maximum "depth" of outer join (one-to-one,many-to-one association),hibernate recommendeds 0-3,0 disables outer join -->
+            <prop key="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</prop>
+        </props>
+    </property>
+   <!-- <property name="packagesToScan" >
+        <list>
+            <value>com.database.hibernateannotation.model</value>
+        </list>
+    </property> -->
+    <property name="annotatedClasses" >
+        <list>
+            <value>com.database.hibernateannotation.model.key.EmployeeSalaryWithTwoForeignKey</value>
+            <value>com.database.hibernateannotation.model.key.EmployeeSalaryWithForeignKey</value>
+            <value>com.database.hibernateannotation.model.key.EmployeeWithSqlGeneratedPrimaryKey</value>
+            <value>com.database.hibernateannotation.model.key.EmployeeWithHibernateGeneratedPrimaryKey</value>
+            <value>com.database.hibernateannotation.model.key.EmployeeWithSqlGeneratedGuid</value>
+        </list>
+    </property>
+</bean>
+    <!-- Common Db Connection Properties Ends-->
 
-    <bean id="hibenateConnection" class="com.database.connection.HibernateConnection">
+    <!-- Db Connection Properties Begin -->
+    <bean id="hibernateConnection" class="com.database.common.connection.DatabaseConnection">
         <property name="dataSource" ref="dataSource" />
         <property name="sessionFactory" ref="sessionFactory"/>
+        <property name="annotatedSessionFactory" ref="annotatedSessionFactory"/>
     </bean>
-
-    <bean id="template" class="org.springframework.orm.hibernate3.HibernateTemplate">
-        <property name="sessionFactory" ref="sessionFactory"></property>
-    </bean>
-
-    <bean id="dataInsertion" class="com.database.insertion.DataInsertion">
+    <bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
         <property name="sessionFactory" ref="sessionFactory"/>
     </bean>
+    <bean id="annotatedHibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
+        <property name="sessionFactory" ref="annotatedSessionFactory"/>
+    </bean>
+    <!--Db Connection Properties Ends -->
+
+    <!--Different Database Services Begin-->
+    <bean id="dbService" class="com.database.DbService" >
+        <property name="hibenateConnection" ref="hibernateConnection"/>
+        <property name="hibernateService" ref="hibernateService"/>
+        <property name="hibernateAnnotationService" ref="hibernateAnnotationService"/>
+        <property name="hibernateTemplateService" ref="hibernateTemplateService"/>
+        <property name="storedProcedureService" ref="storedProcedureService" />
+    </bean>
+    <bean id="hibernateService" class="com.database.hibernate.HibernateService">
+        <property name="hibernateInsertion" ref="hibernateInsertion"/>
+        <property name="hibernateRetrieval" ref="hibernateRetrieval" />
+        <property name="hibernateDeletion"  ref="hibernateDeletion" />
+    </bean>
+    <bean id="hibernateTemplateService" class="com.database.hibernatetemplate.HibernateTemplateService" />
+    <bean id="storedProcedureService" class="com.database.storedprocedure.StoredProcedureService" />
+    <!--Different Database Services Ends -->
+
+    <!--Hibenate Operations Begins -->
+    <bean id="hibernateInsertion" class="com.database.hibernate.upsert.HibernateInsertion">
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
+    </bean>
+    <bean id="hibernateRetrieval" class="com.database.hibernate.retrieval.HibernateRetrieval" />
+    <bean id="hibernateDeletion" class="com.database.hibernate.delete.HibernateDeletion"/>
+    <!--Hibernate Operations Ends -->
+
+    <!--Hibernat Annotation Operations Begins -->
+    <bean id="hibernateAnnotationService" class="com.database.hibernateannotation.HibernateAnnotationService" >
+        <property name="hibernateAnnotationInsertion" ref="hibernateAnnotationInsertion"/>
+    </bean>
+    <bean id="hibernateAnnotationInsertion" class="com.database.hibernateannotation.upsert.HibernateAnnotationInsertion" >
+        <property name="hibernateTemplate" ref="annotatedHibernateTemplate" />
+    </bean>
+    <!--Hibernate Annotation Operation Ends -->
+    <!--Db Insertion Begin -->
+    <bean id="dataInsertion" class="com.database.hibernatetemplate.upsert.DataInsertion">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    <!--Db Insertion Ends -->
+
+
 </beans>

@@ -1,5 +1,4 @@
-package com.database.insertion;
-import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
+package com.database.hibernatetemplate.upsert;
 import org.hibernate.SessionFactory;
 public class DataInsertion {
 
@@ -7,8 +6,8 @@ public class DataInsertion {
     private SessionFactory sessionFactory;
 
     public void insertWithHiberateTemplate(){
-        hibernateTemplate.insertWithGuid();
-        hibernateTemplate.insertWithAutoIncrement();
+        //hibernateTemplate.insertWithGuid();
+        //hibernateTemplate.insertWithAutoIncrement();
     }
     public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
         this.hibernateTemplate = hibernateTemplate;

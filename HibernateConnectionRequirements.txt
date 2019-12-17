@@ -1,0 +1,18 @@
+To Store/Retrieve Data in Database:
+
+		Requirements:
+			Database requirements:
+				1)Database Driver
+				2)Database Connection details -host name,port no,username,password
+				3)Database Table/Column details
+			Hibernate requirements:
+				4)Hibernate jar file (org.hibernate.*)
+				5)Hibernate Mapping file
+				6)Hibernate Method to retrieve/Store data in database
+			Java requirements:
+				6)Need to load Sql Driver 
+				7)Need to Create hibernate session and provide sql access to it
+				8)Java bean class
+				9)with hibernate access,store the data in database
+				
+		

@@ -1,6 +1,8 @@
-package com.database.connection;
-import com.database.bean.FirstTable;
-import com.database.insertion.DataInsertion;
+package com.database.common.connection;
+import com.database.common.model.Employee;
+import com.database.hibernateannotation.model.key.EmployeeSalaryWithForeignKey;
+import com.database.hibernatetemplate.upsert.DataInsertion;
+import org.hibernate.classic.Session;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -9,15 +11,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import org.hibernate.*;
 import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
 
-public class HibernateConnection {
+public class DatabaseConnection {
 
     private static BasicDataSource dataSource;
     private static SessionFactory sessionFactory;
+    private static SessionFactory annotatedSessionFactory;
     private static DataInsertion dataInsertion;
 
-    private void testDataSourceConnection(){
+    public void testDataSourceConnection(){
         System.out.println("Trying to establish JDBC DataSource Connection");
         try {
             Connection connection=this.dataSource.getConnection();
@@ -35,26 +37,30 @@ public class HibernateConnection {
         }
     }
 
-    private void testHibernateConnection(){
+    public void testHibernateConnection(){
         System.out.println("Trying to establish Hibernate Connection");
-        HibernateTemplate hibernateTemplate = new HibernateTemplate(this.sessionFactory);
-        FirstTable firstTable=new FirstTable();
-        firstTable.setFirstName("Vijay");
-        firstTable.setLastName("Manohar");
-        firstTable.setSalary(1000);
-        hibernateTemplate.save(firstTable);
+        HibernateTemplate hibernateTemplate = new HibernateTemplate(this.annotatedSessionFactory);
+        EmployeeSalaryWithForeignKey employee=new EmployeeSalaryWithForeignKey();
+        employee.setEmpId(1);
+        employee.setSalaryId(100);
+        employee.setAvgSalary(1000);
+        employee.setCurrSalary(2000);
+        employee.setSalaryId(25);
+        //employee.setLastName("Manohar");
+        //employee.setSalary(1000);
+        hibernateTemplate.save(employee);
         System.out.println("Hibernate Connection has been established succesfully");
     }
 
-    public static void main(String args[]) {
-        HibernateConnection conn=new HibernateConnection();
-        ApplicationContext context = new ClassPathXmlApplicationContext("context.xml");
-        conn.testDataSourceConnection();
-        conn.testHibernateConnection();
+    public static Session getSession(){
+       return sessionFactory.openSession();
     }
-
     public void setSessionFactory(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
+    }
+
+    public void setAnnotatedSessionFactory(SessionFactory annotatedSessionFactory) {
+        this.annotatedSessionFactory = annotatedSessionFactory;
     }
 
     public void setDataSource(BasicDataSource dataSource) {
