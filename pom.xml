@@ -9,7 +9,7 @@
     <version>1.0-SNAPSHOT</version>
     <properties>
         <sql.version>7.4.1.jre8</sql.version>
-        <spring.version>5.0.1.RELEASE</spring.version>
+        <spring.version>5.3.19</spring.version>
         <hibernate.version>3.5.4-Final</hibernate.version>
     </properties>
     <build>
